@@ -1,0 +1,13 @@
+Homework #1 - Stack implementation using array
+Brian Vargas (varga110@cougars.csusm.edu)
+California State University, San Marcos
+CS311 Data Structures (Spring 2017)
+
+Stack implementation used for postfix single-digit integer arithmetic
+Includes submitted files:
+- main.cpp		Driver file
+- stack.cpp		Stack implementation using array
+- stack.h		Stack header file; specifies int array
+Also includes auxiliary files:
+- hw1stackDemo.out	Executable provided for demo purposes
+- makefile		Makefile used to properly compile the assignment code
