@@ -1,119 +1,221 @@
-//INSTRUCTION:
-//Use the provided text to help create llist.cpp
-//based on Yoshii  CS311  Notes-6A
-
-//- Make sure PURPOSE and PARAMETER comments are given
-//- Make sure all if-then-else are commented describing which case it is
-//- Make sure all local variables are described fully with their purposes
-//EMACS HINT:
-//  control-K cuts and control-Y pastes
-//  Esc X replace-str does string replacements
-//  Esc > goes to the end of the file; Esc < to the beginning
-//  Tab on each line will indent perfectly for C++
-
 // ====================================================
 //HW#: HW3P1 llist
-//Your name: **
-//Complier:  **
-//File type: llist implementation file
+//Your name: Brian Vargas
+//Complier:  g++
+//File type: llist implementation file (llist.cpp)
 //=====================================================
+
+#include <iostream>
+#include <string>
+#include "llist.h" 
 
 using namespace std;
 
-#include<iostream>
-#include"llist.h" 
+//Constructor - initialize front, rear to null and count to 0
+// this does not create any node. new list is empty.
+llist::llist()
+{
+  Front = NULL;
+  Rear = NULL;
+  Count = 0;
+} //end constructor
 
-Constructor
-- initialize Front and Rear to be NULL and Count = 0.
-- This does not create any node.  The new list is empty.
-  
-Destructor  
-- while the list is not empty, call deleteFront repeatedly to delete all nodes.
-- Please place a cout in this function "calling the llist desctructor."
+//PURPOSE: Removes all nodes of linked list to destruct it
+//Destructor - while list not empty, call deleteFront to delete all nodes
+llist::~llist()
+{
+  int dummy; //dummy variable to take in what is deleted from the front
+  //cout by request, tells us we have called the destructor
+//  cout << "Calling the llist destructor" << endl;
+  //cout is redundant information; Professor allowed me to not cout it
+  while(Count != 0){
+    deleteFront(dummy);
+  } //end while
+} //end destructor
 
+//PURPOSE: Determines if Linked List is empty
+//Returns true if the following 3 conditions are met:
+// front and rear both point to NULL, count is 0
 bool llist::isEmpty()
-  - return true if Front and Rear are both pointing to NULL and Count is 0.
-  - (all 3 conditions must be checked)
-
-void llist::displayAll()
-  - Special case: if the list is empty, display [ empty ] ).
-  - Regular: 
-    displays each element of the list horizontally starting from Front in [ ].
+{
+  //definition of empty: front,rear point null and count is 0
+  if(Front==NULL && Rear==NULL && Count==0)
+    return true;
+  return false;
+} //end isEmpty
   
-void llist::addRear(el_t NewNum) 
-2 cases:
-  - Special case: if this is going to be the very first node, you must
-    create a new node and make Front and Rear point to it. Place NewNum and
-    Count is updated.
-  - Regular: adds a new node at the rear and puts NewNum in the Elem field
-    of this new node. Count is updated.
-    Regular case:
-    Rear->Next = new Node;
-    Rear = Rear->Next;
-    Rear->Elem = NewNum;
-    Rear->Next = NULL;
+//PURPOSE: Displays all the elements in the linked list beginning from front
+void llist::displayAll()
+{
+  if(isEmpty()) //if empty, display [ empty ]
+    cout << "[ empty ]" << endl;
+  else{ //loop until our pointer gets to the rear
+    Node *box = Front; //create traversal node; this is how we move through it
+    for(int i=0; i<Count; i++){
+      cout << box->Elem << " ";
+      box = box->Next;
+    } //end for(i)
+    cout << endl;
+  } //end else
+} //end displayAll
 
-void llist::addFront(el_t NewNum)
-2 cases:
-- Special case: if this is going to be the very first node, you must
-   create a new node and make Front and Rear point to it. Place NewNum and
-   Count is updated.
-- Regular: add a new node to the front of the list and 
-  Count is updated.
-  Regular case:
+//PURPOSE: Add an element to the front of the linked list
+//PARAMETER: Elemnent to be added
+void llist::addFront(el_t newNum)
+{
+  //create new node to add to the front; fill it as needed
   Node *x;
   x = new Node;
-  x->Next = Front;
+  x->Elem = newNum;
+  x->Next = NULL;
+
+  //if the linked list is empty, this will be our very first entry
+  // thus, make the rear point to it
+  if(isEmpty())
+    Rear = x;
+  //if the linked list has elements, make the new node point to the front instead
+  else
+    x->Next = Front;
+
+  //now make the front point to this new node to finalize that it's the front
   Front = x;
-  Front->Elem = NewNum;
+  //update counter to show we have 1 more element in the linked list
+  Count++;
+}
 
-void llist::deleteFront(el_t& OldNum)
-3 cases:
-- Error case: if the List is empty, throw Underflow
-- Special case: if currently only one Node,
-   give back the front node element through OldNum (pass by reference) and
-   make sure both Front and Rear become NULL. Count is updated.
-- Regular: give back the front node element through OldNum (pass by reference)
-  and also removes the front node.  Count is updated.
-  Regular case:
-  OldNum = Front->Elem;
-  Node *Second;
-  Second = Front->Next;
-  delete Front;
-  Front = Second;
+//PURPOSE: Add an element to the rear of the linked list
+//PARAMTER: Element to be added  
+void llist::addRear(el_t newNum) 
+{
+  //create new node to add to the rear; fill it as needed
+  Node *x;
+  x = new Node;
+  x->Elem = newNum;
+  x->Next = NULL;
 
-void llist::deleteRear(el_t& OldNum)
- 3 cases:
-- Error case: if empty, throw Underflow
-- Special case: if currently only one node,
-   give back the rear node element through OldNum (pass by reference) and
-   make sure both Front and Rear become NULL. Count is updated.
-- Regular: give back the rear node element through OldNum (pass by reference)
-  and also remove the rear node. Count is updated.
-  Regular case:
-  OldNum = Rear->Elem;
-  Node *p;
-  Make p go to the one right before rear (using while)
-  delete Rear;
-  Rear = p;
+  //if the linked list is empty, this will be our very first entry
+  // thus, make the front point to it
+  if(isEmpty())
+    Front = x;
+  //if the linked list has elements, make the old rear point to this new node
+  else
+    Rear->Next = x;
 
-void llist::deleteIth(int I, el_t& OldNum)
-4 cases:
-- Error case: 
-  If I is an illegal value (i.e. > Count or < 1) throw OutOfRange.
-- Special cases: this should simply call deleteFront when I is 1 or 
-  deleteRear when I is Count
-- Regular: delete the Ith node (I starts out at 1).  Count is updated.
-<see the template loops in the notes to move 2 pointers to the right nodes;
-and make sure you indicate the purposes of these local pointers>
+  //now make the rear point to this new node to finalize that it's the rear
+  Rear = x;
+  //update the counter to show we have 1 more element in the linked list
+  Count++;
+} //end addRear
 
-void llist::addbeforeIth(int I, el_t newNum)
-4 cases:
--  Error case:
-   If I is an illegal value (i.e. > Count+1 or < 1) throw OutOfRange.
--  Special cases: this should simply call addFront when I is 1 or addRear when
-   I is Count+1
--  Regular: add right before the Ith node. Cout if updated.
-<see the template loops in the notes to move 2 pointers to the right nodes
-and make sure you indicate the purposes of these local pointers>
+//PURPOSE: Deletes the entry in the front of the linked list
+//PARAMETER: Holds the value that used to be in front prior to deletion
+void llist::deleteFront(el_t &oldNum)
+{
+  //error case - empty list gives us underflow; can't delete what isn't there!
+  if(isEmpty())
+    throw Underflow();
+  //special case - currently one node
+  //give back element through oldNum, make front,rear Null and update count
+  else if(Count == 1){
+    oldNum = Front->Elem;
+    Front = NULL;
+    Rear = NULL;
+    Count = 0;
+  }
+  //regular case
+  //give back front element through oldNum, remove front node, and update count
+  else{
+    oldNum = Front->Elem;
+    Node *newFront; //placeholder for new front; must delete old front first
+    newFront = Front->Next;
+    delete Front;
+    Front = newFront; //reassign front to the new front after deletion
+    Count--;
+  } //end else: regular case
+} //end deleteFront
 
+//PURPOSE: Deletes the entry in the rear of the linked list
+//PARAMETER: Holds the value that used to be in the rear prior to deletion
+void llist::deleteRear(el_t &oldNum)
+{
+  //error case - empty list gives us underflow; can't delete what isn't there!
+  if(isEmpty())
+    throw Underflow();
+  //special case - currently one node
+  //give back element through oldNum, make front,rear Null and update count
+  else if(Count == 1){
+    oldNum = Rear->Elem;
+    Front = NULL;
+    Rear = NULL;
+    Count = 0;
+  }
+  //regular case
+  //give back rear element through oldNum, remove rear node, and update count
+  else{
+    oldNum = Rear->Elem;
+    Node *newRear; //placeholder for new rear; must delete old rear first
+    newRear = Front;
+    while(newRear->Next != Rear) //find the place right before the rear
+      newRear = newRear->Next; //to be our new rear
+    delete Rear;
+    Rear = newRear; //reassign rear to the new rear after deletion
+    Count--;
+  } //end else: regular case
+}
+
+
+//PURPOSE: Deletes the ith entry in the linked list where i index begins at 1
+//PARAMETER: Holds the value that used to be in the ith slot prior to deletion
+void llist::deleteIth(int i, el_t &oldNum)
+{
+  //error case - i is an illegal value: >Count or <1 - throw outofrange
+  if(i>Count || i<1)
+    throw OutOfRange();
+  //special cases - call other functions we already made for i=1 or i=Count
+  else if(i==1)
+    deleteFront(oldNum);
+  else if(i==Count)
+    deleteRear(oldNum);
+  //regular case
+  //delete ith node where i begins at 1 and update count
+  //make it so i-1 entry now has i+1 entry as its next
+  else{
+    Node *iNode,*priorNode; //pointers that will hold i-1,i entries after traversal
+    priorNode = Front;
+    for(int j=1; j<i-1; j++)
+      priorNode = priorNode->Next; //obtain i-1 entry
+    iNode = priorNode->Next; //obtain i entry to be removed
+    oldNum = iNode->Elem; //value being removed in ith position
+    priorNode->Next = iNode->Next; //have i-1 be followed by i+1 entry by changing next
+    delete iNode;
+    Count--;
+  } //end else: regular case
+}
+
+//PURPOSE: Inserts new node into linked list making it the new ith node
+//PARAMETER: Element to be added
+void llist::addbeforeIth(int i, el_t newNum)
+{
+  //error case - i is an illegal value: >Count+1 or <1 - throw outofrange
+  if(i>Count+1 || i<1)
+    throw OutOfRange();
+  //special cases - call other functions we already made for i=1 or i=Count+1
+  else if(i==1)
+    addFront(newNum);
+  else if(i==Count+1)
+    addRear(newNum);
+  //regular case
+  //add right before ith node where i begins at 1 and update count
+  else{
+    Node *iNode,*priorNode,*newNode; //pointers that will hold i-1,i,i+1 entries after traversal
+    newNode = new Node;
+    priorNode = Front;
+    for(int j=1; j<i-1; j++)
+      priorNode = priorNode->Next; //obtain i-1 entry
+    iNode = priorNode->Next; //obtain i entry - will become i+1 entry after insertion
+    priorNode->Next = newNode; //place new node in i spot
+    newNode->Next = iNode; //have old i entry follow this new node - making it the i+1
+    newNode->Elem = newNum; //insert value into new ith entry of linked list
+    Count++;
+  } //end else: regular case
+}
